@@ -1,5 +1,8 @@
-# [Nombre de Proyecto]
+# Control de Contabilidad
 
-[Enlace a proyecto](https://codealo.dev)
+Automatizar un proceso manual que hace actualmente para su padre en un Excel.
 
-[Descripción del proyecto]
+## Objetivos
+- Cargar información de un Excel.
+- Crear un algoritmo que automatice el proceso manual que el hace.
+- Exportar archivo de Excel con toda la información necesaria.
