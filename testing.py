@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from openpyxl import cell
 
 global run
-run = True
+run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -12,7 +12,7 @@ while run == True:
     mes = int(input('Mes a cargar (insertar nº del 1-12): '))
     año = str(input('Año del libro (ejemplo: 2020): '))
         
-    global totalmes     
+    global totalmes #Crea la variable donde se alojaran los totales de los meses, para asi encontrar mas facilmente los datos necesarios
     if mes == 1:
         totalmes = f"TOTALES AL 31/01/{año}"
     elif mes == 2:
@@ -41,14 +41,14 @@ while run == True:
         print("Error en el mes (linea 12-37)")
         
 
-    for celda in hoja['A']: #Recorre la columna A en busca de la fila donde estan los valores
-        if celda.value == totalmes:
+    for celda in hoja['A']: #Recorre la columna A en busca de la fila donde estan los valores, gracias a la variable totalmes
+        if celda.value == totalmes: 
             fila = celda.row 
-            netogravado = hoja[f"E{fila}"].value
+            netogravado = hoja[f"E{fila}"].value #Busca los valores del neto gravado, el IVA, y el total en base a la fila donde encontro a la variable totalmes
             iva = hoja[f"F{fila}"].value
             importetotal = hoja[f"G{fila}"].value
         else: 
-            if celda.value == f"TOTALES AL 29/02/{año}":
+            if celda.value == f"TOTALES AL 29/02/{año}": #Evita que el script se rompa, en el caso de que un libro sea de un año bisiesto
                 fila = celda.row
                 netogravado = hoja[f"E{fila}"].value
                 iva = hoja[f"F{fila}"].value
@@ -56,27 +56,29 @@ while run == True:
 
 
     ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
-    archivo2 = load_workbook(ruta2)
+    archivo2 = load_workbook(ruta2) #Busca y abre el archivo donde se alojaran los datos del libro
+    global notError1
+    notError1 = False #Evita errores en el caso de que el usuario inserte mal el numero
+    while notError1 == False:
+        libro = int(input('Libro (ventas=1, compras=2): ')) #El usuario decide si va a cargar un libro de Ventas o de compras)
+        if libro == 1:
+            hoja2 = archivo2['VENTAS']
+            if mes == 1:
+                hoja2.cell(row=8, column=5).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+        elif libro == 2:
+            hoja2 = archivo2['COMPRAS']
 
-    libro = int(input('Libro (ventas=1, compras=2): '))
-
-    if libro == 1:
-        hoja2 = archivo2['VENTAS']
-        if mes == 1:
-            hoja2.cell(row=8, column=5).value = netogravado
-            archivo2.save(ruta2)
-    elif libro == 2:
-        hoja2 = archivo2['COMPRAS']
-
-    global notError
-    notError = False
-    while notError == False:
+    global notError2
+    notError2 = False
+    while notError2 == False:
         sigLibro = int(input('¿Desea ingresar otro libro?(Si=1, No=2): '))
         if sigLibro == 1:
             run = True
-            notError = True
+            notError2 = True
         elif sigLibro == 2:
             run = False
-            notError = True
+            notError2 = True
         else:
-            notError = False
+            notError2 = False
