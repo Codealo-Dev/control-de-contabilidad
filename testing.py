@@ -84,12 +84,12 @@ while run == True:
                         global columna
                         fila = celda.row
                         for celda2 in hoja2['E']:
-                            if celda2.value == "gravado":
+                            if celda2.value == str("gravado"):
                                 columna = celda2.column
-                            else:
+                            """elif celda2.value == str("gravado"):
                                 for celda3 in hoja2['C']:
                                     if celda3.value == "$":
-                                        columna = celda3.column
+                                        columna = celda3.column"""
                         hoja2.cell(row= fila, column= columna).value = netogravado
                         
                 archivo2.save(ruta2)
