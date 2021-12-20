@@ -90,7 +90,7 @@ while run == True:
                                 for celda3 in hoja2['C']:
                                     if celda3.value == "$":
                                         columna = celda3.column
-                        hoja2.cell(row= fila, column= columna)
+                        hoja2.cell(row= fila, column= columna).value = netogravado
                         
                 archivo2.save(ruta2)
                 notError1 = True
