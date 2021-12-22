@@ -4,6 +4,24 @@ from openpyxl import cell
 
 global run
 run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
+ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
+
+def ventas(hojaV, mes):
+    global fila2
+    global columna
+    for celda in hojaV['A']:
+        if celda.value == mes:
+            fila2 = celda.row
+            for celda2 in hojaV['C']:
+                if celda2.value == "$":
+                    if hojaV.cell(row=fila2, column=5).value == "gravado":
+                        columna = 5
+                        return columna
+                        break
+                    else:
+                        columna = celda2.column
+                        return columna
+            return fila2
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -81,15 +99,10 @@ while run == True:
             if mes == 1:
                 for celda in hoja2['A']:
                     if celda.value == nombremes:
-                        global columna
                         fila = celda.row
                         for celda2 in hoja2['E']:
                             if celda2.value == str("gravado"):
                                 columna = celda2.column
-                            """elif celda2.value == str("gravado"):
-                                for celda3 in hoja2['C']:
-                                    if celda3.value == "$":
-                                        columna = celda3.column"""
                         hoja2.cell(row= fila, column= columna).value = netogravado
                         
                 archivo2.save(ruta2)
