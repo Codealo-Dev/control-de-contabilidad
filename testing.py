@@ -97,66 +97,10 @@ while run == True:
         libro = int(input('Libro (ventas=1, compras=2): ')) #El usuario decide si va a cargar un libro de Ventas o de compras)
         if libro == 1:
             hoja2 = archivo2['VENTAS']
-            if mes == 1:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 2:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 3:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 4:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 5:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 6:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 7:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 8:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 9:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 10:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 11:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
-            elif mes == 12:
-                ventas(hoja2, nombremes)
-                hoja2.cell(row=fila1, column=columna).value = netogravado
-                archivo2.save(ruta2)
-                notError1 = True
+            ventas(hoja2, nombremes)
+            hoja2.cell(row=fila1, column=columna).value = netogravado
+            archivo2.save(ruta2)
+            notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
 
