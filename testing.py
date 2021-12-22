@@ -8,12 +8,14 @@ ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
 
 def ventas(hojaV, mes):
     global fila2
+    global fila1
     global columna
     for celda in hojaV['A']:
         if celda.value == mes:
-            fila2 = celda.row
+            fila1 = celda.row
             for celda2 in hojaV['C']:
                 if celda2.value == "$":
+                    fila2 = celda2.row
                     if hojaV.cell(row=fila2, column=5).value == "gravado":
                         columna = 5
                         return columna
@@ -21,7 +23,8 @@ def ventas(hojaV, mes):
                     else:
                         columna = celda2.column
                         return columna
-            return fila2
+                        break
+            return fila1
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -85,8 +88,6 @@ while run == True:
                 iva = hoja[f"F{fila}"].value
                 importetotal = hoja[f"G{fila}"].value
 
-
-    ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
     archivo2 = load_workbook(ruta2) #Busca y abre el archivo donde se alojaran los datos del libro
 
     global notError1
@@ -97,14 +98,63 @@ while run == True:
         if libro == 1:
             hoja2 = archivo2['VENTAS']
             if mes == 1:
-                for celda in hoja2['A']:
-                    if celda.value == nombremes:
-                        fila = celda.row
-                        for celda2 in hoja2['E']:
-                            if celda2.value == str("gravado"):
-                                columna = celda2.column
-                        hoja2.cell(row= fila, column= columna).value = netogravado
-                        
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 2:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 3:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 4:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 5:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 6:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 7:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 8:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 9:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 10:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 11:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
+                archivo2.save(ruta2)
+                notError1 = True
+            elif mes == 12:
+                ventas(hoja2, nombremes)
+                hoja2.cell(row=fila1, column=columna).value = netogravado
                 archivo2.save(ruta2)
                 notError1 = True
         elif libro == 2:
