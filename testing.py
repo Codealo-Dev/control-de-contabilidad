@@ -1,13 +1,11 @@
-from openpyxl import workbook
-from openpyxl import load_workbook
-from openpyxl import cell
+from openpyxl import workbook, cell, load_workbook
 
 global run
 run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
 ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
 
-def ventas(hojaV, mes):
-    global fila2
+
+def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Ganancias la fila y la columna en la cual debera ubicar los datos
     global fila1
     global columna
     for celda in hojaV['A']:
@@ -25,6 +23,26 @@ def ventas(hojaV, mes):
                         return columna
                         break
             return fila1
+
+gastos = ["BCO.CREDICOOP - ARGENCARD", "BANCO CREDICOOP - CABAL", "EDENOR SA", "TELEFONICA",
+ "AMERICAN EXPRESS SA", "REDGUARD SA"]
+
+def compras(hojaC, mesC):
+    global valor1
+    global valor2
+    global gastoTotal
+    for celda in hojaC['D']:
+        for gasto in gastos:
+            if celda.value == gasto:
+                row = celda.row + 1
+                row2 = celda.row + 2
+                valor1 = hojaC.cell(row=row, column=1).value
+                valor2 = hojaC.cell(row=row2, column=1).value
+                if valor2 == None:
+                    gastoTotal =+ valor1
+                elif type(valor1) and type(valor2) == float:
+                    gastoTotal =+ valor1 + valor2
+    return gastoTotal
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -103,6 +121,9 @@ while run == True:
             notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
+            compras(hoja, nombremes)
+            print(gastoTotal)
+            notError1 = True
 
     global notError2
     notError2 = False
