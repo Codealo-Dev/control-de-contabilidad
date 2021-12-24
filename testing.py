@@ -12,7 +12,7 @@ def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Gana
         if celda.value == mes:
             fila1 = celda.row
             for celda2 in hojaV['C']:
-                if celda2.value == "$":
+                if celda2.value == "$": #La diferencia entre "$" y "gravado" es que en algunos archivos aparece una, y en otros aparecen ambas. Por eso es una solucion global.
                     fila2 = celda2.row
                     if hojaV.cell(row=fila2, column=5).value == "gravado":
                         columna = 5
@@ -22,7 +22,7 @@ def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Gana
                         columna = celda2.column
                         return columna
                         break
-            return fila1
+            return fila1 
 
 gastos = ["BCO.CREDICOOP - ARGENCARD", "BANCO CREDICOOP - CABAL", "EDENOR SA", "TELEFONICA",
  "AMERICAN EXPRESS SA", "REDGUARD SA"]
@@ -32,17 +32,17 @@ def compras(hojaC, mesC):
     global valor2
     global gastoTotal
     for celda in hojaC['D']:
-        for gasto in gastos:
-            if celda.value == gasto:
-                row = celda.row + 1
-                row2 = celda.row + 2
-                valor1 = hojaC.cell(row=row, column=1).value
+        for gasto in gastos: #Busca cada uno de los gastos definidos en la lista de la linea 27
+            if celda.value == gasto: #Compara el valor de la celda con los gastos
+                row = celda.row + 1 #Al tener uno o dos valores (ya que hay importes con un iva de 10,5% y otros con 21%)
+                row2 = celda.row + 2 #Busca los valores de las 2 filas siguientes a donde se encuentra el concepto gasto 
+                valor1 = hojaC.cell(row=row, column=1).value #Como los valores siempre estan en la columna A (o column=1), toma esos valores
                 valor2 = hojaC.cell(row=row2, column=1).value
-                if valor2 == None:
+                if valor2 == None: #Evita el error por NoneType, ya que si encuentra que el segundo valor es nulo, solo suma el valor1
                     gastoTotal =+ valor1
                 elif type(valor1) and type(valor2) == float:
                     gastoTotal =+ valor1 + valor2
-    return gastoTotal
+    return gastoTotal #Te devuelve la suma de los gastos totales
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -51,7 +51,7 @@ while run == True:
     mes = int(input('Mes a cargar (insertar nº del 1-12): '))
     año = str(input('Año del libro (ejemplo: 2020): '))
 
-    global nombremes    
+    global nombremes #Crea la variable donde se alojara el nombre del mes, para asi encontrar en el archivo de DDJJ la fila donde debera ubicar los datos   
     global totalmes #Crea la variable donde se alojaran los totales de los meses, para asi encontrar mas facilmente los datos necesarios
     if mes == 1:
         nombremes = "ENERO"
@@ -116,8 +116,8 @@ while run == True:
         if libro == 1:
             hoja2 = archivo2['VENTAS']
             ventas(hoja2, nombremes)
-            hoja2.cell(row=fila1, column=columna).value = netogravado
-            archivo2.save(ruta2)
+            hoja2.cell(row=fila1, column=columna).value = netogravado #Carga el valor obtenido en la fila y la columna segun la funcion ventas()
+            archivo2.save(ruta2) #Sobreescribe el archivo original, con los datos obtenidos
             notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
