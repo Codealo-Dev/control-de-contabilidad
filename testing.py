@@ -27,10 +27,11 @@ def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Gana
 gastos = ["BCO.CREDICOOP - ARGENCARD", "BANCO CREDICOOP - CABAL", "EDENOR SA", "TELEFONICA",
  "AMERICAN EXPRESS SA", "REDGUARD SA"]
 
-def compras(hojaC, mesC):
+def compras(hojaC, hojaG, mes, neto):
     global valor1
     global valor2
     global gastoTotal
+    global rowC
     for celda in hojaC['D']:
         for gasto in gastos: #Busca cada uno de los gastos definidos en la lista de la linea 27
             if celda.value == gasto: #Compara el valor de la celda con los gastos
@@ -42,7 +43,10 @@ def compras(hojaC, mesC):
                     gastoTotal =+ valor1
                 elif type(valor1) and type(valor2) == float:
                     gastoTotal =+ valor1 + valor2
-    return gastoTotal #Te devuelve la suma de los gastos totales
+    for celda2 in hojaG['A']:
+        if celda2.value == mes:
+            rowC = celda2.row
+            return gastoTotal and rowC
 
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
@@ -121,8 +125,10 @@ while run == True:
             notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
-            compras(hoja, nombremes)
-            print(gastoTotal)
+            compras(hoja, hoja2, nombremes, netogravado)
+            hoja2.cell(row=rowC, column= 7).value = gastoTotal
+            hoja2.cell(row=rowC, column= 5).value = netogravado - gastoTotal
+            archivo2.save(ruta2)
             notError1 = True
 
     global notError2
