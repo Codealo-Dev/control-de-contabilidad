@@ -5,7 +5,29 @@ global run
 run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
 ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
 
-def alicuota(hoja, hoja2, mes, año):
+def libroF(hoja, mes, año, libro):
+    global netogravado
+    for celda in hoja['A']: #Recorre la columna A en busca de la fila donde estan los valores, gracias a la variable totalmes
+        if celda.value == mes: 
+            fila = celda.row
+            if libro == 1: 
+                netogravado = hoja[f"D{fila}"].value #Busca los valores del neto gravado, el IVA, y el total en base a la fila donde encontro a la variable totalmes
+                importetotal = hoja[f"F{fila}"].value
+            elif libro == 2:
+                netogravado = hoja[f"E{fila}"].value 
+                importetotal = hoja[f"G{fila}"].value                
+        else: 
+            if celda.value == f"TOTALES AL 29/02/{año}": #Evita que el script se rompa, en el caso de que un libro sea de un año bisiesto
+                fila = celda.row
+                if libro == 1: 
+                    netogravado = hoja[f"D{fila}"].value
+                    importetotal = hoja[f"F{fila}"].value
+                elif libro == 2:
+                    netogravado = hoja[f"E{fila}"].value 
+                    importetotal = hoja[f"G{fila}"].value                    
+    return netogravado and importetotal
+
+def alicuota(hoja, hoja2, mes, año, libro):
     global valoresIVA
     valoresIVA = []
     for celda in hoja['B']:
@@ -18,7 +40,10 @@ def alicuota(hoja, hoja2, mes, año):
     for celda2 in hoja2['A']:
         if celda2.value == datetime(int(año), mes, 1, 0, 0, 0):
             lista = str(set(valoresIVA))
-            hoja2.cell(row=celda2.row, column=8).value = lista
+            if libro == 1:
+                hoja2.cell(row=celda2.row, column=9).value = lista
+            elif libro == 2:
+                hoja2.cell(row=celda2.row, column=7).value = lista
             
 
 def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Ganancias la fila y la columna en la cual debera ubicar los datos
@@ -117,16 +142,6 @@ while run == True:
         print("Error en el mes (linea 12-37)")
         
 
-    for celda in hoja['A']: #Recorre la columna A en busca de la fila donde estan los valores, gracias a la variable totalmes
-        if celda.value == totalmes: 
-            fila = celda.row 
-            netogravado = hoja[f"E{fila}"].value #Busca los valores del neto gravado, el IVA, y el total en base a la fila donde encontro a la variable totalmes
-            importetotal = hoja[f"G{fila}"].value
-        else: 
-            if celda.value == f"TOTALES AL 29/02/{año}": #Evita que el script se rompa, en el caso de que un libro sea de un año bisiesto
-                fila = celda.row
-                netogravado = hoja[f"E{fila}"].value
-                importetotal = hoja[f"G{fila}"].value
 
     archivo2 = load_workbook(ruta2) #Busca y abre el archivo donde se alojaran los datos del libro
 
@@ -138,16 +153,18 @@ while run == True:
         if libro == 1:
             hoja2 = archivo2['VENTAS']
             ventas(hoja2, nombremes)
+            libroF(hoja, totalmes, año, libro)
             hoja2.cell(row=fila1, column=columna).value = netogravado #Carga el valor obtenido en la fila y la columna segun la funcion ventas()
-            alicuota(hoja, hoja2, mes, año)
+            alicuota(hoja, hoja2, mes, año, libro)
             archivo2.save(ruta2) #Sobreescribe el archivo original, con los datos obtenidos
             notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
             compras(hoja, hoja2, nombremes)
+            libroF(hoja, totalmes, año, libro)
             hoja2.cell(row=rowC, column= 7).value = gastoTotal
             hoja2.cell(row=rowC, column= 5).value = netogravado - gastoTotal
-            alicuota(hoja, hoja2, mes, año)
+            alicuota(hoja, hoja2, mes, año, libro)
             archivo2.save(ruta2)
             notError1 = True
 
