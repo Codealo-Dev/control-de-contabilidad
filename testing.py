@@ -1,9 +1,25 @@
+from datetime import datetime
 from openpyxl import workbook, cell, load_workbook
 
 global run
 run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
 ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
 
+def alicuota(hoja, hoja2, mes, año):
+    global valoresIVA
+    valoresIVA = []
+    for celda in hoja['B']:
+        if celda.value == 21:
+            valoresIVA.append("IVA 21%")
+        elif celda.value == 10.5:
+            valoresIVA.append("IVA 10.5%")
+        elif celda.value == 27:
+            valoresIVA.append("IVA 27%")
+    for celda2 in hoja2['A']:
+        if celda2.value == datetime(int(año), mes, 1, 0, 0, 0):
+            lista = str(set(valoresIVA))
+            hoja2.cell(row=celda2.row, column=8).value = lista
+            
 
 def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Ganancias la fila y la columna en la cual debera ubicar los datos
     global fila1
@@ -22,12 +38,15 @@ def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Gana
                         columna = celda2.column
                         return columna
                         break
+                elif celda2.value == "gravadas":
+                    columna = celda2.column
+                    return columna    
             return fila1 
 
 gastos = ["BCO.CREDICOOP - ARGENCARD", "BANCO CREDICOOP - CABAL", "EDENOR SA", "TELEFONICA",
  "AMERICAN EXPRESS SA", "REDGUARD SA"]
 
-def compras(hojaC, hojaG, mes, neto):
+def compras(hojaC, hojaG, mes):
     global valor1
     global valor2
     global gastoTotal
@@ -60,6 +79,7 @@ while run == True:
     if mes == 1:
         nombremes = "ENERO"
         totalmes = f"TOTALES AL 31/01/{año}"
+        fecha = "1/1/2020"
     elif mes == 2:
         nombremes = "FEBRERO"
         totalmes = f"TOTALES AL 28/02/{año}"
@@ -101,13 +121,11 @@ while run == True:
         if celda.value == totalmes: 
             fila = celda.row 
             netogravado = hoja[f"E{fila}"].value #Busca los valores del neto gravado, el IVA, y el total en base a la fila donde encontro a la variable totalmes
-            iva = hoja[f"F{fila}"].value
             importetotal = hoja[f"G{fila}"].value
         else: 
             if celda.value == f"TOTALES AL 29/02/{año}": #Evita que el script se rompa, en el caso de que un libro sea de un año bisiesto
                 fila = celda.row
                 netogravado = hoja[f"E{fila}"].value
-                iva = hoja[f"F{fila}"].value
                 importetotal = hoja[f"G{fila}"].value
 
     archivo2 = load_workbook(ruta2) #Busca y abre el archivo donde se alojaran los datos del libro
@@ -121,13 +139,15 @@ while run == True:
             hoja2 = archivo2['VENTAS']
             ventas(hoja2, nombremes)
             hoja2.cell(row=fila1, column=columna).value = netogravado #Carga el valor obtenido en la fila y la columna segun la funcion ventas()
+            alicuota(hoja, hoja2, mes, año)
             archivo2.save(ruta2) #Sobreescribe el archivo original, con los datos obtenidos
             notError1 = True
         elif libro == 2:
             hoja2 = archivo2['COMPRAS']
-            compras(hoja, hoja2, nombremes, netogravado)
+            compras(hoja, hoja2, nombremes)
             hoja2.cell(row=rowC, column= 7).value = gastoTotal
             hoja2.cell(row=rowC, column= 5).value = netogravado - gastoTotal
+            alicuota(hoja, hoja2, mes, año)
             archivo2.save(ruta2)
             notError1 = True
 
