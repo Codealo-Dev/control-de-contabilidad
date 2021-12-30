@@ -1,31 +1,40 @@
 from datetime import datetime
 from openpyxl import workbook, cell, load_workbook
 
-global run
 run = True #Crea una variable para que el script siga corriendo siempre que el usuario quiera
 ruta2 = input("Ubicacion del archivo DDJJ Ganancias: ")
 
 def libroF(hoja, mes, año, libro):
     global netogravado
+    global nogravado
+    global regEsp
+    global importetotal
+    global fila
     for celda in hoja['A']: #Recorre la columna A en busca de la fila donde estan los valores, gracias a la variable totalmes
         if celda.value == mes: 
             fila = celda.row
             if libro == 1: 
                 netogravado = hoja[f"D{fila}"].value #Busca los valores del neto gravado, el IVA, y el total en base a la fila donde encontro a la variable totalmes
                 importetotal = hoja[f"F{fila}"].value
+                return netogravado and importetotal
             elif libro == 2:
-                netogravado = hoja[f"E{fila}"].value 
-                importetotal = hoja[f"G{fila}"].value                
-        else: 
-            if celda.value == f"TOTALES AL 29/02/{año}": #Evita que el script se rompa, en el caso de que un libro sea de un año bisiesto
-                fila = celda.row
-                if libro == 1: 
-                    netogravado = hoja[f"D{fila}"].value
-                    importetotal = hoja[f"F{fila}"].value
-                elif libro == 2:
-                    netogravado = hoja[f"E{fila}"].value 
-                    importetotal = hoja[f"G{fila}"].value                    
-    return netogravado and importetotal
+                netogravado = hoja[f"E{fila}"].value #Cambia las celdas en las que se encuentran los valores deseados segun el libro donde se busque, debido a que esto ocasiono un error en el programa
+                nogravado = hoja[f"B{fila}"].value
+                regEsp = hoja[f"C{fila}"].value 
+                importetotal = hoja[f"G{fila}"].value 
+                return netogravado, nogravado, regEsp, importetotal               
+        elif celda.value == f"TOTALES AL 29/02/{año}":
+            fila = celda.row
+            if libro == 1: 
+                netogravado = hoja[f"D{fila}"].value
+                importetotal = hoja[f"F{fila}"].value
+                return netogravado and importetotal
+            elif libro == 2:
+                netogravado = hoja[f"E{fila}"].value
+                nogravado = hoja[f"B{fila}"].value
+                regEsp = hoja[f"C{fila}"].value 
+                importetotal = hoja[f"G{fila}"].value
+                return netogravado, nogravado, regEsp, importetotal  
 
 def alicuota(hoja, hoja2, mes, año, libro):
     global valoresIVA
@@ -69,13 +78,14 @@ def ventas(hojaV, mes): #Crea una funcion que busca dentro del archivo DDJJ Gana
             return fila1 
 
 gastos = ["BCO.CREDICOOP - ARGENCARD", "BANCO CREDICOOP - CABAL", "EDENOR SA", "TELEFONICA",
- "AMERICAN EXPRESS SA", "REDGUARD SA"]
+ "AMERICAN EXPRESS SA", "REDGUARD SA", "BANCO CREDICOOP", "POSNET SRL", "CULLIGAN ARG SA", "EUROTIME SA", "posnet srl"]
 
 def compras(hojaC, hojaG, mes):
     global valor1
     global valor2
     global gastoTotal
     global rowC
+    global columnC
     for celda in hojaC['D']:
         for gasto in gastos: #Busca cada uno de los gastos definidos en la lista de la linea 27
             if celda.value == gasto: #Compara el valor de la celda con los gastos
@@ -90,21 +100,24 @@ def compras(hojaC, hojaG, mes):
     for celda2 in hojaG['A']:
         if celda2.value == mes:
             rowC = celda2.row
-            return gastoTotal and rowC
+            columnasPosibles = [hojaG['G6'], hojaG['H6']]
+            for columna in columnasPosibles:
+                if columna.value == "Gastos" or "gastos":
+                    columnC = columna.column
+            return gastoTotal, rowC and columnC
 
+año = str(input('Año de los libros (ejemplo: 2020): '))
 while run == True:
     ruta1 = str(input("Ubicacion del libro : ")) 
     archivo = load_workbook(ruta1) #Abre el archivo Excel del libro a utilizar
     hoja = archivo.active
     mes = int(input('Mes a cargar (insertar nº del 1-12): '))
-    año = str(input('Año del libro (ejemplo: 2020): '))
 
     global nombremes #Crea la variable donde se alojara el nombre del mes, para asi encontrar en el archivo de DDJJ la fila donde debera ubicar los datos   
     global totalmes #Crea la variable donde se alojaran los totales de los meses, para asi encontrar mas facilmente los datos necesarios
     if mes == 1:
         nombremes = "ENERO"
         totalmes = f"TOTALES AL 31/01/{año}"
-        fecha = "1/1/2020"
     elif mes == 2:
         nombremes = "FEBRERO"
         totalmes = f"TOTALES AL 28/02/{año}"
@@ -122,7 +135,7 @@ while run == True:
         totalmes = f"TOTALES AL 30/06/{año}"
     elif mes == 7:
         nombremes = "JULIO"
-        totalmes = f"TOTALES AL 31/07{año}"
+        totalmes = f"TOTALES AL 31/07/{año}" 
     elif mes == 8:
         nombremes = "AGOSTO"
         totalmes = f"TOTALES AL 31/08/{año}"
@@ -162,8 +175,8 @@ while run == True:
             hoja2 = archivo2['COMPRAS']
             compras(hoja, hoja2, nombremes)
             libroF(hoja, totalmes, año, libro)
-            hoja2.cell(row=rowC, column= 7).value = gastoTotal
-            hoja2.cell(row=rowC, column= 5).value = netogravado - gastoTotal
+            hoja2.cell(row=rowC, column= (columnC)).value = gastoTotal
+            hoja2.cell(row=rowC, column= (columnC - 2)).value = (netogravado - gastoTotal)
             alicuota(hoja, hoja2, mes, año, libro)
             archivo2.save(ruta2)
             notError1 = True
